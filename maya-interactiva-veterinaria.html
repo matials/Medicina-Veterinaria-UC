@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Maya Interactiva Medicina Veterinaria</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Montserrat', 'Segoe UI', sans-serif;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 2.6em;
+      letter-spacing: 2px;
+      font-weight: 900;
+      color: #7737fd;
+      text-shadow: 0 2px 10px #fff6;
+    }
+    .semestre-group {
+      background: rgba(255,255,255,0.8);
+      border-radius: 20px;
+      margin: 24px auto;
+      padding: 18px 24px 10px 24px;
+      box-shadow: 0 4px 24px #7737fd22;
+      max-width: 700px;
+      width: 90%;
+    }
+    .semestre-title {
+      font-size: 1.35em;
+      font-weight: bold;
+      margin-bottom: 14px;
+      color: #2b125e;
+      letter-spacing: 1px;
+    }
+    .ramo-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .ramo {
+      flex: 1 1 210px;
+      min-width: 180px;
+      background: var(--ramo-color, #eee);
+      color: #fff;
+      border-radius: 14px;
+      padding: 14px 12px;
+      margin-bottom: 8px;
+      font-size: 1.07em;
+      font-weight: 600;
+      box-shadow: 0 2px 8px #0002;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s, color 0.2s, text-decoration 0.2s;
+      border: 3px solid #fff0;
+      user-select: none;
+    }
+    .ramo.tachado {
+      background: #8be38b !important;
+      color: #2c3e50 !important;
+      text-decoration: line-through;
+      border-color: #43a047;
+    }
+    .ramo input {
+      position: absolute;
+      left: 10px;
+      bottom: 8px;
+      width: 90%;
+      font-size: 1em;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      padding: 6px 8px;
+      outline: none;
+      margin-top: 5px;
+      box-shadow: 0 1px 6px #0001;
+    }
+    .ramo .confirm-btn {
+      display: block;
+      margin: 6px auto 0 auto;
+      background: #7737fd;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.95em;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .ramo .confirm-btn:hover {
+      background: #8ec5fc;
+      color: #7737fd;
+    }
+    @media (max-width: 600px) {
+      .ramo-list { flex-direction: column; }
+      .ramo { min-width: 90%; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Maya Interactiva Medicina Veterinaria</h1>
+  <div id="maya"></div>
+  <script>
+    // Colores preciosos y distintos para cada ramo (paleta vibrante)
+    const ramoColors = [
+      "#ff69b4", "#ffa500", "#00bfff", "#32cd32", "#9370db", "#ffd700", "#00ced1", "#dc143c", "#20b2aa", "#ff8c00",
+      "#6a5acd", "#40e0d0", "#ff6347", "#ee82ee", "#4682b4", "#00fa9a", "#7b68ee", "#f08080", "#3cb371", "#ff4500",
+      "#1e90ff", "#ffb6c1", "#228b22", "#ff1493", "#ff7f50", "#2e8b57", "#db7093", "#8b0000", "#b0c4de", "#8fbc8f",
+      "#2f4f4f", "#e9967a", "#c71585", "#483d8b", "#6b8e23", "#00ff7f", "#b8860b", "#ff00ff", "#bc8f8f", "#7fffd4",
+      "#d2691e", "#4169e1", "#ffdead", "#a0522d", "#cd5c5c", "#8b4513", "#fa8072", "#708090", "#ffe4e1", "#ffdab9",
+      "#191970", "#adff2f", "#ffeb3b", "#009688", "#4caf50", "#f44336", "#e91e63", "#9c27b0", "#3f51b5", "#2196f3", // + extra
+    ];
+
+    // Datos de la maya
+    const maya = [
+      {
+        semestre: "Semestre 1",
+        ramos: [
+          "Introducción a la Medicina Veterinaria",
+          "Química",
+          "Física para Ciencias Biomédica",
+          "Cálculo",
+          "Biología y Diversidad Animal",
+          "Filosofía: ¿Para Qué?",
+        ]
+      },
+      {
+        semestre: "Semestre 2",
+        ramos: [
+          "Anatomía Veterinaria I",
+          "Biología Molecular de la Célula",
+          "Histología y Embriología",
+          "Bioestadística",
+          "Ética Veterinaria",
+          "Electivo Formación General",
+        ]
+      },
+      {
+        semestre: "Semestre 3",
+        ramos: [
+          "Anatomía Veterinaria II",
+          "Fisiología Animal",
+          "Ecología Veterinaria",
+          "Etología y Bienestar Animal",
+          "Electivo Formación General",
+        ]
+      },
+      {
+        semestre: "Semestre 4",
+        ramos: [
+          "Microbiología e Inmunología",
+          "Fisiopatología Veterinaria",
+          "Genética y Evolución",
+          "Procedimientos del Manejo Animal",
+          "Electivo Formación General",
+          "Electivo Formación General",
+        ]
+      },
+      {
+        semestre: "Semestre 5",
+        ramos: [
+          "Enfermedades Parasitarias",
+          "Patología General y Sistemática",
+          "Nutrición y Metabolismo Animal",
+          "Alimentos y Alimentación Animal",
+          "Electivo Formación General",
+        ]
+      },
+      {
+        semestre: "Semestre 6",
+        ramos: [
+          "Enfermedades Infecciosas",
+          "Farmacología y Toxicología",
+          "Reproducción Animal",
+          "Electivo Formación General",
+          "Electivo Formación General",
+        ]
+      },
+      {
+        semestre: "Semestre 7",
+        ramos: [
+          "Semiología y Métodos Diagnósticos",
+          "Patología Clínica",
+          "Ginecología y Obstetricia",
+          "Salud Pública y Epidemiología",
+          "Producción de Monogástricos",
+        ]
+      },
+      {
+        semestre: "Semestre 8",
+        ramos: [
+          "Medicina Interna I",
+          "Calidad e Inocuidad de Productos Pecuarios",
+          "Producción de Rumiantes",
+          "Economía y Administración Veterinaria",
+          "Manejo de Vida Silvestre y Medicina de Animales Exóticos",
+        ]
+      },
+      {
+        semestre: "Semestre 9",
+        ramos: [
+          "Medicina Interna II",
+          "Cirugía y Anestesia",
+          "Formulación y Evaluación de Proyectos en Medicina Veterinaria",
+          "Optativo de Profundización",
+          "Optativo de Profundización",
+        ]
+      },
+      {
+        semestre: "Semestre 10",
+        ramos: [
+          "Imagenología Veterinaria",
+          "Cirugía y Anestesia Avanzada",
+          "Optativo de Profundización",
+          "Optativo de Profundización",
+          "Optativo de Profundización",
+        ]
+      },
+      {
+        semestre: "Semestre 11 – 12",
+        ramos: [
+          { name: "Internado en Caninos y Felinos", subramos: [
+            "Cirugía y Anestesia",
+            "Emergencia y Cuidados Intensivos",
+            "Imagenología",
+            "Reproducción",
+            "Medicina Interna",
+            "Patología Animal",
+            "Patología Clínica",
+            "Internado Electivo"
+          ]}
+        ]
+      }
+    ];
+
+    // Detectar si es electivo/optativo/internado electivo
+    function isEspecial(ramo) {
+      if (typeof ramo === "string") {
+        ramo = ramo.toLowerCase();
+        return ramo.includes("electivo") || ramo.includes("optativo");
+      } else if (ramo.name && ramo.name.toLowerCase().includes("internado")) {
+        return true;
+      }
+      return false;
+    }
+
+    // Renderizar la maya
+    let colorIndex = 0;
+    const mayaDiv = document.getElementById("maya");
+    maya.forEach((sem) => {
+      const groupDiv = document.createElement("div");
+      groupDiv.className = "semestre-group";
+      const title = document.createElement("div");
+      title.className = "semestre-title";
+      title.textContent = sem.semestre;
+      groupDiv.appendChild(title);
+
+      const listDiv = document.createElement("div");
+      listDiv.className = "ramo-list";
+
+      sem.ramos.forEach((ramo) => {
+        if (typeof ramo === "object" && ramo.subramos) {
+          // Internado especial: mostrar subramos
+          const internadoDiv = document.createElement("div");
+          internadoDiv.className = "ramo";
+          internadoDiv.style.setProperty('--ramo-color', ramoColors[colorIndex++ % ramoColors.length]);
+          internadoDiv.textContent = ramo.name;
+          listDiv.appendChild(internadoDiv);
+
+          ramo.subramos.forEach((subramo) => {
+            const subDiv = document.createElement("div");
+            subDiv.className = "ramo";
+            subDiv.style.setProperty('--ramo-color', ramoColors[colorIndex++ % ramoColors.length]);
+            subDiv.textContent = subramo;
+
+            // Si es Internado Electivo
+            if (subramo.toLowerCase().includes("electivo")) {
+              subDiv.dataset.especial = "true";
+            }
+
+            listDiv.appendChild(subDiv);
+          });
+
+        } else {
+          const ramoDiv = document.createElement("div");
+          ramoDiv.className = "ramo";
+          ramoDiv.style.setProperty('--ramo-color', ramoColors[colorIndex++ % ramoColors.length]);
+          ramoDiv.textContent = ramo;
+          if (isEspecial(ramo)) {
+            ramoDiv.dataset.especial = "true";
+          }
+          listDiv.appendChild(ramoDiv);
+        }
+      });
+      groupDiv.appendChild(listDiv);
+      mayaDiv.appendChild(groupDiv);
+    });
+
+    // Interactividad: tachar y cambiar de color
+    mayaDiv.addEventListener('click', function(e) {
+      const el = e.target;
+      if (!el.classList.contains('ramo') || el.classList.contains('tachado')) return;
+
+      // Si es especial (optativo/electivo/internado electivo)
+      if (el.dataset.especial === "true") {
+        // Si ya tiene el input, no hacer nada
+        if (el.querySelector('input')) return;
+
+        // Mostrar input para escribir nombre del ramo
+        const input = document.createElement('input');
+        input.type = "text";
+        input.placeholder = "Escribe el nombre del ramo...";
+        input.maxLength = 40;
+
+        const btn = document.createElement('button');
+        btn.textContent = "Confirmar";
+        btn.className = "confirm-btn";
+
+        btn.onclick = function(ev) {
+          ev.stopPropagation();
+          if (input.value.trim().length === 0) {
+            input.style.borderColor = "#f44336";
+            input.placeholder = "¡Debes escribir el nombre!";
+            return;
+          }
+          el.textContent = input.value.trim();
+          el.classList.add("tachado");
+        };
+
+        el.appendChild(input);
+        el.appendChild(btn);
+        input.focus();
+      } else {
+        el.classList.add("tachado");
+      }
+    });
+  </script>
+</body>
+</html>
